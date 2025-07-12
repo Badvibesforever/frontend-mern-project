@@ -11,36 +11,55 @@ export const useProductStore = create((set) => ({
       return { success: false, message: "Please fill in all fields." };
     }
 
-    const res = await fetch(`${API}/api/products`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(newProduct),
-    });
+    try {
+      const res = await fetch(`${API}/api/products`, {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newProduct),
+      });
 
-    const data = await res.json();
-    set((state) => ({ products: [...state.products, data.data] }));
-    return { success: true, message: "Product created successfully" };
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "Failed to create product");
+
+      set((state) => ({ products: [...state.products, data.data] }));
+      return { success: true, message: "Product created successfully" };
+    } catch (err) {
+      return { success: false, message: err.message };
+    }
   },
 
   fetchProducts: async () => {
-    const res = await fetch(`${API}/api/products`);
-    const data = await res.json();
-    set({ products: data.data });
+    try {
+      const res = await fetch(`${API}/api/products`, {
+        credentials: "include",
+      });
+
+      const data = await res.json();
+      set({ products: data.data || [] });
+    } catch (err) {
+      console.error("Fetch products failed:", err);
+    }
   },
 
   deleteProduct: async (pid) => {
-    const res = await fetch(`${API}/api/products/${pid}`, {
-      method: "DELETE",
-    });
+    try {
+      const res = await fetch(`${API}/api/products/${pid}`, {
+        method: "DELETE",
+        credentials: "include",
+      });
 
-    const data = await res.json();
-    if (!data.success) {
-      return { success: false, message: data.message };
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message);
+
+      set((state) => ({
+        products: state.products.filter((product) => product._id !== pid),
+      }));
+      return { success: true, message: data.message };
+    } catch (err) {
+      return { success: false, message: err.message };
     }
-
-    set((state) => ({
-      products: state.products.filter((product) => product._id !== pid),
-    }));
-    return { success: true, message: data.message };
   },
 }));

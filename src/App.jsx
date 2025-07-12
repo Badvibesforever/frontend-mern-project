@@ -1,11 +1,17 @@
 import { Box } from "@chakra-ui/react";
 import { Route, Routes } from "react-router-dom";
+
 import NavBar from "./components/ui/NavBar";
 import HomePage from "./pages/HomePage";
 import CreatePage from "./pages/CreatePage";
+import MyProducts from "./pages/MyProducts";
+import EditProduct from "./pages/EditProduct";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import PrivateRoute from "./components/PrivateRoute";
 import { useColorModeValue } from "@/components/ui/color-mode";
-import { useProductStore } from "./store/product";
 import { Toaster } from "@/components/ui/toaster";
+
 function App() {
   const bg = useColorModeValue("gray.100", "gray.900");
 
@@ -14,7 +20,35 @@ function App() {
       <NavBar />
       <Routes>
         <Route path="/" element={<HomePage />} />
-        <Route path="/create" element={<CreatePage />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+
+        <Route
+          path="/create"
+          element={
+            <PrivateRoute>
+              <CreatePage />
+            </PrivateRoute>
+          }
+        />
+
+        <Route
+          path="/edit/:id"
+          element={
+            <PrivateRoute>
+              <EditProduct />
+            </PrivateRoute>
+          }
+        />
+
+        <Route
+          path="/my-products"
+          element={
+            <PrivateRoute>
+              <MyProducts />
+            </PrivateRoute>
+          }
+        />
       </Routes>
       <Toaster />
     </Box>
