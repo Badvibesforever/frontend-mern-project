@@ -6,7 +6,7 @@ import HomePage from "./pages/HomePage";
 import CreatePage from "./pages/CreatePage";
 import MyProducts from "./pages/MyProducts";
 import EditProduct from "./pages/EditProduct";
-import Login from "./pages/login";
+import Login from "./pages/Login";
 import Register from "./pages/Register";
 import PrivateRoute from "./pages/PrivateRoute";
 import { useColorModeValue } from "@/components/ui/color-mode";
