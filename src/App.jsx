@@ -1,4 +1,5 @@
-import { Box } from "@chakra-ui/react";
+import { useEffect } from "react";
+import { Box, Spinner, Center } from "@chakra-ui/react";
 import { Route, Routes } from "react-router-dom";
 
 import NavBar from "./components/ui/NavBar";
@@ -11,9 +12,24 @@ import Register from "./pages/Register";
 import PrivateRoute from "./pages/PrivateRoute";
 import { useColorModeValue } from "@/components/ui/color-mode";
 import { Toaster } from "@/components/ui/toaster";
+import { useAuthStore } from "@/store/authStore"; // ✅ import Zustand store
 
 function App() {
   const bg = useColorModeValue("gray.100", "gray.900");
+  const getProfile = useAuthStore((s) => s.getProfile);
+  const loading = useAuthStore((s) => s.loading);
+
+  useEffect(() => {
+    getProfile();
+  }, []);
+
+  if (loading) {
+    return (
+      <Center minH="100vh" bg={bg}>
+        <Spinner size="xl" />
+      </Center>
+    );
+  }
 
   return (
     <Box minH="100vh" bg={bg}>
@@ -22,7 +38,6 @@ function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-
         <Route
           path="/create"
           element={
@@ -31,7 +46,6 @@ function App() {
             </PrivateRoute>
           }
         />
-
         <Route
           path="/edit/:id"
           element={
@@ -40,7 +54,6 @@ function App() {
             </PrivateRoute>
           }
         />
-
         <Route
           path="/my-products"
           element={

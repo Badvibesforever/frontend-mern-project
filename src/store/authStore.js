@@ -56,15 +56,22 @@ export const useAuthStore = create((set) => ({
   },
 
   getProfile: async () => {
+    set({ loading: true });
     try {
-      const res = await fetch(`${API}/api/auth/profile`, {
+      const res = await fetch(`${API}/api/auth/me`, {
+        method: "GET",
         credentials: "include",
       });
 
       const data = await res.json();
-      if (res.ok) set({ user: data.user });
+      if (res.ok) {
+        set({ user: data.user, loading: false });
+      } else {
+        set({ user: null, loading: false });
+      }
     } catch (err) {
       console.warn("Unable to restore session.");
+      set({ user: null, loading: false });
     }
   },
 }));
