@@ -8,14 +8,13 @@ import {
   Spinner,
   Text,
   VStack,
-  useToast,
 } from "@chakra-ui/react";
+import { toaster } from "@/components/ui/toaster";
 
 export default function EditProduct() {
   const { id } = useParams();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
-  const toast = useToast();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -29,6 +28,10 @@ export default function EditProduct() {
         setProduct(data.data);
       } catch (err) {
         console.error("Error loading product", err);
+        toast({
+          title: "Error",
+          description: "Failed to load product.",
+        });
       } finally {
         setLoading(false);
       }
@@ -57,13 +60,22 @@ export default function EditProduct() {
 
       const data = await res.json();
       if (data.success) {
-        toast({ title: "Product updated", status: "success" });
+        toast({
+          title: "Product updated",
+          description: "Your product has been saved successfully.",
+        });
         navigate("/my-products");
       } else {
-        toast({ title: data.message, status: "error" });
+        toast({
+          title: "Update failed",
+          description: data.message || "Something went wrong.",
+        });
       }
     } catch (err) {
-      toast({ title: "Update failed", status: "error" });
+      toast({
+        title: "Network error",
+        description: "Could not update product.",
+      });
     }
   };
 
@@ -108,7 +120,7 @@ export default function EditProduct() {
             placeholder="Price"
             type="number"
           />
-          <Button type="submit" colorScheme="blue" w="100%">
+          <Button type="submit" colorPalette="blue" w="100%">
             Update Product
           </Button>
         </VStack>

@@ -1,9 +1,13 @@
 import { useColorModeValue } from "@/components/ui/color-mode";
-import { Container } from "@chakra-ui/react";
+import {
+  Container,
+  Heading,
+  VStack,
+  Input,
+  Box,
+  Button,
+} from "@chakra-ui/react";
 import { useState } from "react";
-import { Heading, VStack, Input } from "@chakra-ui/react";
-import { Box } from "@chakra-ui/react";
-import { Button } from "@chakra-ui/react";
 import { useProductStore } from "@/store/product";
 import { toaster } from "@/components/ui/toaster";
 
@@ -18,35 +22,32 @@ const CreatePage = () => {
 
   const handleAddProduct = async () => {
     const { success, message } = await createProduct(newProduct);
-    if (!success) {
-      toaster.create({
-        title: "Toast Title",
-        description: "Toast Description",
-        closable: true,
-        duration: 6000,
-      });
-    } else {
-      toaster.create({
-        title: "Toast Title",
-        description: "Toast Description",
-        closable: true,
-        duration: 6000,
-      });
+
+    toaster({
+      title: success ? "Product Created" : "Failed to Create",
+      description:
+        message ||
+        (success ? "Product added successfully." : "Something went wrong."),
+      variant: "default",
+    });
+
+    if (success) {
+      setNewProduct({ name: "", price: "", image: "" });
     }
-    setNewProduct({ name: "", price: "", image: "" });
   };
+
   return (
-    <Container maxW={"xl"}>
+    <Container maxW="xl">
       <VStack spacing={8}>
         <Heading as="h1" size="2xl" textAlign="center" mb={8}>
           Create New Product
         </Heading>
         <Box
-          w={"full"}
+          w="full"
           bg={useColorModeValue("white", "gray.800")}
           p={6}
-          rounded={"lg"}
-          shadow={"md"}
+          rounded="lg"
+          shadow="md"
         >
           <VStack spacing={4}>
             <Input
@@ -74,7 +75,6 @@ const CreatePage = () => {
                 setNewProduct({ ...newProduct, image: e.target.value })
               }
             />
-
             <Button colorPalette="blue" onClick={handleAddProduct} w="full">
               Add Product
             </Button>

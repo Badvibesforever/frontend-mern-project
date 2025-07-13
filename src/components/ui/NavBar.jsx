@@ -1,91 +1,98 @@
 import React from "react";
-import {
-  Button,
-  Container,
-  Flex,
-  HStack,
-  Text,
-  useToast,
-} from "@chakra-ui/react";
-import { useColorMode } from "@/components/ui/color-mode";
+import { Box, Button, Container, Flex, HStack, Text } from "@chakra-ui/react";
 import { CiSquarePlus } from "react-icons/ci";
 import { LuMoon, LuSun } from "react-icons/lu";
-import { Link, useNavigate } from "react-router-dom";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/store/authStore";
+import { toaster } from "@/components/ui/toaster";
+import { useColorMode } from "@/components/ui/color-mode";
 
 const NavBar = () => {
   const { colorMode, toggleColorMode } = useColorMode();
   const { user, logout } = useAuthStore();
   const navigate = useNavigate();
-  const toast = useToast();
 
   const handleLogout = async () => {
     await logout();
-    toast({ title: "Logged out", status: "info", duration: 3000 });
+    toaster({
+      title: "Logged out",
+      description: "You have been logged out successfully.",
+    });
     navigate("/login");
   };
 
   return (
-    <Container maxW={"1140px"} p={4}>
-      <Flex
-        h={16}
-        justifyContent={"space-between"}
-        alignItems={"center"}
-        flexDir={{
-          base: "column",
-          sm: "row",
-        }}
-      >
-        <Text
-          fontSize={{ base: 22, sm: 28 }}
-          fontWeight={"bold"}
-          textTransform={"uppercase"}
-          textAlign={"center"}
-          bgGradient={"to-r"}
-          gradientFrom={"cyan.400"}
-          gradientTo={"blue.500"}
-          bgClip="text"
+    <Box
+      bg={colorMode === "light" ? "gray.100" : "gray.900"}
+      py={4}
+      px={6}
+      shadow="md"
+    >
+      <Container maxW="1140px">
+        <Flex
+          justify="space-between"
+          align="center"
+          direction={{ base: "column", sm: "row" }}
         >
-          <Link to={"/"}>MERN Stack App</Link>
-        </Text>
+          <RouterLink to="/">
+            <Text
+              fontSize={{ base: "2xl", sm: "3xl" }}
+              fontWeight="bold"
+              textTransform="uppercase"
+              bgGradient="to-r"
+              gradientFrom="teal.400"
+              gradientTo="blue.500"
+              bgClip="text"
+              textAlign="center"
+            >
+              MERN Stack App
+            </Text>
+          </RouterLink>
 
-        <HStack spacing={3} alignItems={"center"}>
-          <Link to="/create">
-            <Button title="Create product">
-              <CiSquarePlus />
+          <HStack spacing={3} mt={{ base: 4, sm: 0 }}>
+            {user && (
+              <RouterLink to="/create">
+                <Button title="Create product" leftIcon={<CiSquarePlus />}>
+                  Create
+                </Button>
+              </RouterLink>
+            )}
+
+            <Button onClick={toggleColorMode}>
+              {colorMode === "light" ? (
+                <LuSun size={20} />
+              ) : (
+                <LuMoon size={20} />
+              )}
             </Button>
-          </Link>
 
-          <Button onClick={toggleColorMode}>
-            {colorMode === "light" ? <LuSun size="20" /> : <LuMoon />}
-          </Button>
-
-          {user ? (
-            <>
-              <Text fontSize="sm" fontWeight="medium">
-                {user.email}
-              </Text>
-              <Button size="sm" onClick={handleLogout}>
-                Logout
-              </Button>
-            </>
-          ) : (
-            <>
-              <Link to="/login">
-                <Button size="sm" variant="outline">
-                  Login
+            {user ? (
+              <>
+                <Text fontSize="sm" fontWeight="medium">
+                  {user.email}
+                </Text>
+                <Button size="sm" onClick={handleLogout}>
+                  Logout
                 </Button>
-              </Link>
-              <Link to="/register">
-                <Button size="sm" colorScheme="teal">
-                  Register
-                </Button>
-              </Link>
-            </>
-          )}
-        </HStack>
-      </Flex>
-    </Container>
+              </>
+            ) : (
+              <>
+                <RouterLink to="/login">
+                  <Button size="sm" variant="outline">
+                    Login
+                  </Button>
+                </RouterLink>
+                <RouterLink to="/register">
+                  <Button size="sm" colorScheme="teal">
+                    Register
+                  </Button>
+                </RouterLink>
+              </>
+            )}
+          </HStack>
+        </Flex>
+      </Container>
+    </Box>
   );
 };
 
